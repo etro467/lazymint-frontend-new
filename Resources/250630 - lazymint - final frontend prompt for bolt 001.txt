@@ -1,0 +1,227 @@
+
+In one single shot, generate a production-ready Next.js 14 web application for LazyMint (www.lazymint.me) with the following specifications: 
+
+
+## CORE TECHNICAL REQUIREMENTS:
+
+### 1. Framework & Architecture
+- Next.js 14 with App Router and TypeScript
+- Tailwind CSS + ShadcN/UI components
+- Feature-based folder structure with React Server Components
+- Zustand for state management
+- Static export configuration for Netlify deployment
+
+### 2. Integrations
+- Firebase v10 SDK (Auth, Firestore, Storage) - client-side only
+- RevenueCat SDK (@revenuecat/purchases-js) for subscription management
+- Real Firebase Cloud Functions integration (no mocks)
+- Base URL: https://us-central1-lazymint-hackathon.cloudfunctions.net/
+
+### 3. Critical Configuration Files
+
+**MANDATORY package.json dependencies:**
+```json
+{
+  "dependencies": {
+    "@elastic/transport": "8.4.1",
+    "undici": "5.28.4"
+  },
+  "overrides": {
+    "@elastic/transport": "8.4.1",
+    "undici": "5.28.4"
+  },
+  "resolutions": {
+    "@elastic/transport": "8.4.1", 
+    "undici": "5.28.4"
+  },
+  "scripts": {
+    "build": "next build",
+    "test-build": "npm run build && echo 'Build test passed - no undici errors'",
+    "verify-deps": "npm ls undici @elastic/transport",
+    "fix-undici": "npm install @elastic/transport@8.4.1 undici@5.28.4 --save-exact",
+    "pre-deploy": "npm run verify-deps && npm run test-build"
+  }
+}
+```
+
+**MANDATORY next.config.js:**
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: { unoptimized: true },
+  swcMinify: false,
+  experimental: {
+    swcPlugins: [],
+    serverComponentsExternalPackages: ['undici', '@elastic/transport', 'firebase-admin'],
+  },
+  webpack: (config, { isServer, webpack }) => {
+    // CRITICAL: Prevent undici parsing errors
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        undici: false,
+        '@elastic/transport': false,
+      };
+      
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        "undici": false,
+        "@elastic/transport": false,
+        "fs": false,
+        "net": false,
+        "tls": false,
+      };
+    }
+    
+    // Ignore undici-related modules during client bundling
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^undici$/,
+        contextRegExp: /.*$/,
+      })
+    );
+    
+    return config;
+  },
+}
+module.exports = nextConfig
+```
+
+**MANDATORY Import Conflict Prevention:**
+```typescript
+// ALWAYS use aliases for Lucide React icons to prevent conflicts
+import { 
+  Link as LinkIcon, 
+  Image as ImageIcon,
+  Button as ButtonIcon,
+  Home as HomeIcon,
+  User as UserIcon
+} from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+```
+
+## FUNCTIONAL REQUIREMENTS:
+
+### 1. Authentication & User Management
+- Email/password authentication via Firebase
+- Protected routes and role-based access
+- User profile management
+- **ALL AUTH CALLS CLIENT-SIDE ONLY** (useEffect, event handlers)
+
+### 2. Creator Dashboard
+- Campaign CRUD operations with Firestore
+- Analytics integration via getCampaignAnalytics Cloud Function
+- AI feature suite (Premium tier):
+  * generateCampaignContent Cloud Function
+  * generateTicketBackground Cloud Function
+  * generateArtisticQr Cloud Function
+- Algorand integration via logCampaignToAlgorand Cloud Function (Pro users)
+- Export functionality via exportClaimEmailsCSV Cloud Function
+- **ALL FIREBASE CALLS IN CLIENT COMPONENTS WITH useEffect**
+
+### 3. Public Features
+- Fan claim flow (/claim/:campaignId)
+- Email verification system via processClaim and verifyClaim Cloud Functions
+- Digital ticket system via downloadAsset Cloud Function
+- Demo mode for new users and hackathon judges
+
+### 4. RevenueCat Subscription Management (Demo Mode)
+- Install @revenuecat/purchases-js SDK (auto-enters Preview API Mode in Bolt)
+- Pricing page (/pricing) with Free, Basic, and Pro tiers
+- Feature gating based on RevenueCat subscription status (demo mode)
+- Display "Powered by RevenueCat" branding for hackathon compliance
+- Wrap all RevenueCat calls in try/catch blocks for deployment safety
+- handleRevenueCatWebhook Cloud Function integration
+- **ALL REVENUECAT CALLS CLIENT-SIDE ONLY**
+
+### 5. Legal & Informational Pages
+- Dynamic content loading from Firestore legalContent collection
+- Pages: Privacy Policy, Terms of Service, EULA, Disclaimers
+- **NO HARDCODED LEGAL CONTENT** - Must fetch from getLegalContent Cloud Function
+- **ALL LEGAL CONTENT FETCHING CLIENT-SIDE ONLY**
+
+## HACKATHON COMPLIANCE REQUIREMENTS:
+- **"Built on Bolt" Badge**: Official badge prominently displayed
+- **Make More Money Challenge**: RevenueCat integration with subscription tier display
+- **Blockchain Challenge**: Highlight Algorand lazy minting for campaign metadata
+- **Deploy Challenge**: Netlify-ready deployment configuration
+- **One-Shot Competition**: Complete solution in single prompt
+
+## TECHNICAL CONSTRAINTS:
+- **NO API routes** in app/api/ or pages/api/
+- **ALL Firebase/RevenueCat calls must be client-side**
+- **NO server-side data fetching**
+- **NO mock implementations or setTimeout**
+- Must follow exact dependency versions (undici@5.28.4, @elastic/transport@8.4.1)
+- Must include all specified build verification steps
+- Build command: `npm run pre-deploy` (includes verification)
+- Publish directory: `out`
+
+## FIREBASE CLOUD FUNCTIONS INTEGRATION:
+**Required functions to integrate** (NO MOCK IMPLEMENTATIONS):
+- createCampaign, uploadAsset, processClaim, verifyClaim
+- handleRevenueCatWebhook, downloadAsset, getCampaignAnalytics
+- generateCampaignContent, generateTicketBackground, generateArtisticQr
+- logCampaignToAlgorand, getLegalContent, exportClaimEmailsCSV
+
+**Import requirements:**
+```typescript
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getFirestore, getDocs, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+```
+
+## MODULAR STRUCTURE:
+```
+src/
+  features/
+    monetization/        // Self-contained RevenueCat folder
+      PricingPage.tsx
+      SubscriptionStatus.tsx
+      revenueCatConfig.ts
+    ai-features/         // Self-contained AI folder  
+      ContentGenerator.tsx
+      QRGenerator.tsx
+      aiConfig.ts
+    core/               // Essential features
+      Dashboard.tsx
+      Auth.tsx
+```
+
+## OUTPUT DELIVERABLES:
+
+### 1. Complete Source Code:
+- All configuration files with exact specifications above
+- TypeScript interfaces and component library
+- State management setup with Zustand stores
+- Real Firebase and RevenueCat integrations[1][2]
+
+### 2. Documentation:
+- Local development guide
+- Deployment instructions for Netlify
+- Environment variable setup guide
+
+### 3. Build & Deployment:
+- Netlify-ready configuration
+- Build verification scripts that prevent undici errors
+- Environment setup with RevenueCat and Firebase keys
+
+## CRITICAL SUCCESS CRITERIA:
+- ✅ Builds successfully with `npm run pre-deploy`
+- ✅ Passes all undici error prevention checks
+- ✅ Uses exact next.config.js and package.json configurations provided
+- ✅ Implements all real integrations (no mocks)
+- ✅ Follows mandatory import alias patterns
+- ✅ Maintains client-side-only data fetching
+- ✅ Includes locked dependency versions
+- ✅ All Lucide React icons use aliases (Link as LinkIcon, etc.)
+- ✅ RevenueCat integration with hackathon branding
+- ✅ All hackathon compliance badges and features
+
+**Build Command**: `npm run pre-deploy`  
+**Publish Directory**: `out`  
+**Framework**: Next.js 14 with App Router (NOT React + Vite)
+

@@ -1,0 +1,207 @@
+Here's a modularized PRD optimized for AI-assisted development, structured in discrete components with clear interfaces and dependencies:
+
+---
+
+# **LazyMint Modular SaaS Specification**  
+**Version 2.1 - AI Builder Edition**  
+*Last Updated: June 11, 2025*
+
+## **Architecture Overview**
+```mermaid
+graph TD
+    A[Frontend] --> B[API Gateway]
+    B --> C[Firebase Services]
+    C --> D[Firestore]
+    C --> E[Cloud Functions]
+    C --> F[Authentication]
+    G[Third-Party] --> C
+```
+
+---
+
+## **Core Modules Breakdown**
+
+### **1. Authentication Module**
+```typescript
+interface AuthModule {
+  signUp(email: string, password: string): Promise<UserRecord>;
+  signIn(provider: 'google' | 'github' | 'email'): Promise<UserCredential>;
+  resetPassword(email: string): Promise<void>;
+  updateSecuritySettings(config: SecurityConfig): Promise<void>;
+}
+```
+
+**Implementation Specs:**
+- Firebase Authentication with email/password + OAuth providers
+- Session management via Firebase Auth state listeners
+- Security rules template:
+  ```firestore
+  match /users/{userId} {
+    allow read, update: if request.auth != null && request.auth.uid == userId;
+  }
+  ```
+
+---
+
+### **2. Campaign Management Module**
+```typescript
+interface CampaignAPI {
+  createCampaign(data: CampaignDTO): Promise<Campaign>;
+  pauseCampaign(campaignId: string): Promise<void>;
+  getAnalytics(campaignId: string): Promise<AnalyticsReport>;
+  exportEmails(campaignId: string): Promise<CSVBlob>;
+}
+```
+
+**Data Model:**
+```json
+{
+  "campaigns": {
+    "fields": {
+      "title": "string",
+      "assetURL": "string",
+      "claimLimit": "number",
+      "expiration": "timestamp",
+      "status": "active|paused|expired"
+    }
+  }
+}
+```
+
+---
+
+### **3. QR Generator Module**
+```typescript
+interface QRGenerator {
+  createQR(data: string, config: QRConfig): Promise<QRImage>;
+  validateQR(qrId: string): Promise<ValidationResult>;
+  applyBranding(qrImage: Blob, branding: BrandingOptions): Promise<Blob>;
+}
+```
+
+**Customization Matrix:**
+| Feature          | Options                          | Tech Stack              |
+|------------------|----------------------------------|-------------------------|
+| Color            | Hex, RGB, Gradients              | @bitjson/qr-code        |
+| Shapes           | Squares, Circles, Custom SVG     | Canvas API              |
+| Logo Integration | PNG/SVG, Size Constraints        | HTML FileReader         |
+| Animation        | Materialize, FadeIn, Custom Lottie| Lottie Web              |
+
+---
+
+## **Phase Implementation Plan**
+
+### **Phase 1: Core MVP**
+```mermaid
+gantt
+    title Development Phases
+    dateFormat  YYYY-MM-DD
+    section Core
+    Auth Module       :active, 2025-06-12, 5d
+    Campaign Creation :2025-06-15, 7d
+    QR Basics         :2025-06-17, 5d
+```
+
+**Milestone Checklist:**
+- [ ] Firebase project initialized with CLI
+- [ ] Base UI shell deployed to Netlify
+- [ ] Email verification flow operational
+- [ ] Static QR generation with color customization
+
+---
+
+### **Phase 2: Monetization & Scaling**
+```json
+{
+  "stripeIntegration": {
+    "plans": [
+      {
+        "name": "pro",
+        "price": 9900,
+        "features": ["white-label", "analytics"]
+      }
+    ],
+    "webhookHandlers": ["subscription.created", "invoice.paid"]
+  }
+}
+```
+
+**Payment Flow:**
+1. User selects plan → Stripe Checkout embedded
+2. Successful payment → Firebase Function triggers user upgrade
+3. Stripe webhook updates Firestore `users` collection
+
+---
+
+### **Phase 3: Advanced Features**
+**AI-Assisted Components:**
+```python
+# Campaign suggestion pseudo-code
+def suggest_campaign(creator_history):
+    model = load_llm('gemini-pro')
+    prompt = f"""
+    Based on {creator_history}, suggest:
+    - Optimal claim limits
+    - Best expiration timeframe
+    - Asset type recommendations
+    """
+    return model.generate(prompt)
+```
+
+**Blockchain Logging:**
+```bash
+firebase deploy --only functions:logToAlgorand
+```
+
+---
+
+## **DevOps Pipeline**
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SA }}'
+```
+
+---
+
+## **Compliance Requirements**
+```csv
+Requirement,Implementation,Test Case
+GDPR Compliance,Data deletion hooks in Firestore rules,Verify user data purge
+WCAG 2.1 AA,Contrast checker in theme config,Screen reader test
+PCI DSS,Stripe Elements for payment processing,Audit charge logs
+```
+
+---
+
+## **AI Builder Toolkit**
+1. **Component Generator**:  
+
+
+2. **API Contract Validation**:  
+   ```bash
+   curl -X POST https://api.lazymint.dev/validate-spec \
+     -H "Content-Type: application/json" \
+     -d @./api-contract.json
+   ```
+
+3. **Error Pattern Library**:  
+   ```javascript
+   const errorMap = {
+     'auth/email-already-in-use': 'Please login instead',
+     'campaign/limit-exceeded': 'Upgrade plan for more campaigns'
+   };
+   ```
+
+This modular spec enables parallel development with clear integration points. Each component can be built independently using the interface contracts and validated against the test cases provided.
+

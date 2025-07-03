@@ -1,0 +1,44 @@
+gcloud -h
+
+
+---
+
+C:\Program Files (x86)\Google\Cloud SDK>gcloud -h
+Usage: gcloud [optional flags] <group | command>
+  group may be           access-approval | access-context-manager |
+                         active-directory | ai | ai-platform | alloydb |
+                         anthos | api-gateway | apigee | app | apphub |
+                         artifacts | asset | assured | audit-manager | auth |
+                         backup-dr | batch | beta | bigtable | billing | bms |
+                         bq | builds | certificate-manager | cloud-shell |
+                         colab | components | composer | compute | config |
+                         container | data-catalog | database-migration |
+                         dataflow | dataplex | dataproc | datastore |
+                         datastream | deploy | deployment-manager |
+                         developer-connect | dns | domains | edge-cache |
+                         edge-cloud | emulators | endpoints |
+                         essential-contacts | eventarc | filestore | firebase |
+                         firestore | functions | gemini | healthcare | iam |
+                         iap | identity | ids | immersive-stream |
+                         infra-manager | kms | logging | looker | lustre |
+                         managed-kafka | memcache | memorystore | metastore |
+                         migration | ml | ml-engine | model-armor | monitoring |
+                         netapp | network-connectivity | network-management |
+                         network-security | network-services | notebooks |
+                         observability | oracle-database | org-policies |
+                         organizations | pam | parametermanager |
+                         policy-intelligence | policy-troubleshoot | privateca |
+                         projects | publicca | pubsub | recaptcha |
+                         recommender | redis | resource-manager | run | scc |
+                         scheduler | secrets | service-directory |
+                         service-extensions | services | source | spanner |
+                         sql | storage | tasks | telco-automation | topic |
+                         transcoder | transfer | vmware | workbench |
+                         workflows | workspace-add-ons | workstations
+  command may be         cheat-sheet | docker | feedback | help | info | init |
+                         survey | version
+
+For detailed information on this command and its flags, run:
+  gcloud --help
+
+C:\Program Files (x86)\Google\Cloud SDK>

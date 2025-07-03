@@ -1,0 +1,212 @@
+# LazyMint SaaS Platform - Product Requirements & Detailed Specification (v3.0)
+
+**Codename:** LazyMint — Limited Edition Fan Campaign Builder
+**Last Updated:** June 12, 2025
+
+---
+
+## I. Executive Summary
+
+LazyMint empowers creators to launch limited edition digital campaigns accessible via collectible QR codes. Fans enter their email to claim symbolic QR codes (e.g., "#7 of 100") and gain access to special campaign link trees. This system supports exclusivity-inspired engagement *without* managing accounts or private certificates of ownership.
+
+LazyMint is designed as a fully modular, installable **Progressive Web App (PWA)** with a Firebase backend, allowing:
+
+* Offline editing of campaign templates
+* Campaign-specific fan engagement
+* Revenue streams via Stripe *and* RevenueCat
+* Symbolic, sharable participation without resale risk
+* Seamless onboarding, analytics, and customizable branding
+
+---
+
+## II. Architecture Overview
+
+### **Tech Stack**
+
+* **Frontend:** HTML5 + Preact + Tailwind (editable via simple file structure)
+* **Backend:** Firebase (Firestore, Auth, Cloud Functions)
+* **Deployment:** Netlify (via Bolt.new CLI)
+* **Monetization:** Stripe + RevenueCat (configurable)
+* **AI Support:** Gemini AI via Firebase Extensions (QR & campaign generation)
+
+### **Architecture Diagram (ASCII)**
+
+```
++-------------------+       +-----------------+       +------------------+
+|   User Device     | <-->  |     Frontend    | <-->  |     Firebase     |
+| (Mobile or Web)   |       |  (LazyMint PWA) |       | (Auth, Firestore |
++-------------------+       +-----------------+       |  Functions, AI)  |
+                                                   +------------------+
+```
+
+### **Module Layout (File Structure)**
+
+```
+LazyMint/
+├── public/
+│   └── index.html               # Editable homepage
+├── src/
+│   ├── config/                  # Settings & Text Configs
+│   │   └── homepage.ts
+│   ├── modules/
+│   │   ├── auth/                # Email auth (no persistent login)
+│   │   ├── campaign/            # Builder, editor, metadata
+│   │   ├── qr-generator/        # Custom + animated QR art
+│   │   ├── analytics/           # Claim stats, conversion
+│   │   └── monetization/        # Stripe + RevenueCat switchable
+│   ├── services/                # Firebase API Wrappers
+│   │   ├── firestore.ts
+│   │   ├── auth.ts
+│   │   └── monetization.ts
+│   └── main.ts
+├── legal/                       # Editable Legal Pages
+│   ├── privacy.html
+│   ├── terms.html
+│   ├── eula.html
+│   └── disclaimers.html
+├── firebase/
+│   └── functions/               # claim, email, QR logic
+└── README.md
+```
+
+---
+
+## III. User Flow
+
+1. **Creator:** Logs into editor, creates a new campaign
+2. **Fan:** Scans QR → enters email → receives personalized code ("#X of 100")
+3. **System:** Sends email with QR image + general campaign link tree
+4. **Optionally:** Shares QR or link → friends see campaign assets
+
+---
+
+## IV. Core Modules
+
+### 1. **Authentication**
+
+* Email-only login per campaign (fan-side)
+* Firebase Auth for creators
+
+### 2. **Campaign Manager**
+
+* Create, edit, pause, archive campaigns
+* Metadata: title, limit, asset URL, expiration
+* Export claims & emails to CSV
+
+### 3. **QR Generator**
+
+* Input: campaign ID, fan email
+* Output: PNG + optional Lottie
+* Style Options: color, gradient, shapes, logos
+* AI customization via Gemini prompt
+
+### 4. **Monetization Module**
+
+* RevenueCat integration (mobile focus)
+* Stripe checkout (PWA / desktop)
+* Config toggle in `src/config/monetization.ts`
+
+### 5. **AI Assistant (Gemini)**
+
+* Campaign suggestions
+* QR visual prompts
+* Email + link copywriting
+
+---
+
+## V. Pages (UI Wireframes in ASCII)
+
+### 1. Homepage (index.html)
+
+```
++------------------------------------+
+| LAZYMINT                          ⊕|
+|------------------------------------|
+| [ HERO HEADLINE ]                 |
+| "Launch your limited edition QR..."|
+| [ Launch Campaign ] [ Learn More ]|
++------------------------------------+
+```
+
+### 2. Campaign Editor
+
+```
++-----------------------------+
+| Campaign Builder            |
+|-----------------------------|
+| Title:  [___________]       |
+| Limit:  [ 100 ]             |
+| Expires: [date/time picker]|
+| Asset:  [Upload File]       |
+| [Generate QR] [Save Draft] |
++-----------------------------+
+```
+
+### 3. Fan Claim Page (per campaign)
+
+```
++-------------------------------+
+| Welcome to: "Album Launch"   |
+|-------------------------------|
+| Enter your email to claim     |
+| [ user@email.com ]           |
+| [ Claim QR Code ]            |
++-------------------------------+
+```
+
+### 4. Campaign Settings / Export
+
+```
++-----------------------------+
+| Settings & Tools            |
+|-----------------------------|
+| [ Export CSV ] [Analytics] |
+| [ Default QR Settings   ]  |
+| [ Branding / Logo       ]  |
+| [ Delete Campaign       ]  |
++-----------------------------+
+```
+
+### 5. Legal Pages (all editable HTML)
+
+```
+public/
+├── privacy.html
+├── terms.html
+├── eula.html
+└── disclaimers.html
+```
+
+---
+
+## VI. Special Hackathon Feature Coverage
+
+| Hackathon Challenge       | LazyMint Solution                               |
+| ------------------------- | ----------------------------------------------- |
+| Deploy Challenge          | ✅ Deployed via Netlify                          |
+| Custom Domain Challenge   | ✅ Uses `lazymint.me` via Entri                  |
+| Make More Money Challenge | ✅ RevenueCat SDK integration                    |
+| Blockchain Challenge      | ⚠️ Firebase Function stub for Algorand logging  |
+| Voice AI Challenge        | ⏳ ElevenLabs integration planned for onboarding |
+| Conversational AI Video   | ⏳ Tavus planned for AI onboarding videos        |
+
+---
+
+## VII. DevOps / CI
+
+* GitHub Actions `.yml` triggers Firebase deploy
+* Firebase Hosting + Firestore
+* Netlify handles domain + frontend deploy
+
+---
+
+## VIII. Future Enhancements
+
+* NFT-compatible token tracking
+* Multilingual UI
+* Multi-campaign dashboard view
+* Rich analytics (referrer tracking, conversion)
+
+---
+
+**Ready for Firebase Studio Prompt Generation → Then Bolt.new frontend build.**

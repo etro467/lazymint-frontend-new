@@ -1,0 +1,203 @@
+
+In one single shot, generate a complete, production-ready web application frontend named 'LazyMint', which will be deployed to www.lazymint.me hosted on Netlify.
+
+// Generate a complete Next.js 14 application for LazyMint - A digital creator platform
+// that empowers creators to securely engage fans and distribute unique digital content
+// without crypto complexities, offering lazy minting of verifiable campaign data to Algorand
+
+// CRITICAL: Core application architecture
+- **MUST USE Next.js 14 with App Router and TypeScript** (NOT React + Vite)
+- Initialize with Tailwind CSS and ShadcN/UI components
+- Configure Firebase v10 SDK (Auth, Firestore, Storage) with REAL integrations
+- Set up Stripe SDK for subscription management (NO RevenueCat or other payment providers)
+- Implement feature-based folder structure with React Server Components
+- Use Zustand for client-side state management
+- **NO MOCK API CALLS** - Configure actual Firebase Cloud Functions integration
+- Implement proper error boundaries and loading states
+
+// Design & Aesthetics
+- Theme: Minty-green, fresh, and modern color palette
+- UI/UX: Clean, modern aesthetic with ShadcN/UI components
+- Fully responsive across all devices (desktop, tablet, mobile)
+- Dark/Light theme toggle on main page
+- ARIA compliance and keyboard navigation support
+- Must include official "Built on Bolt" badge in deployed UI
+
+// Authentication and User Management
+- Firebase Authentication with email/password sign-up/login/logout
+- Protected routes for creator dashboard
+- Role-based access control for subscription tiers
+- User onboarding and profile management
+
+// Creator Dashboard (Authenticated Users Only)
+- Campaign Management: CRUD operations with **REAL** Firebase Firestore updates
+  * Display list of creator's campaigns from Firestore
+  * UI to trigger ACTUAL Firebase Cloud Functions: createCampaign, pauseCampaign, archiveCampaign, deleteCampaign
+- Analytics: Display key metrics from **REAL** getCampaignAnalytics Cloud Function
+- AI-Powered Features (Premium Tier Features):
+  * Content Generation: UI to trigger **REAL** generateCampaignContent Cloud Function
+  * Ticket Backgrounds: UI to trigger **REAL** generateTicketBackground Cloud Function
+  * Artistic QR Codes: UI to trigger **REAL** generateArtisticQr Cloud Function
+- Algorand Integration: UI to trigger **REAL** logCampaignToAlgorand Cloud Function (Pro users)
+- CSV Export: Button to trigger **REAL** exportClaimEmailsCSV Cloud Function
+- Feature gating based on Stripe subscription status
+
+// Fan Claim Flow (Public Access)
+- Public claim page: /claim/:campaignId
+- Email input form for claims
+- Email verification workflow with /verify-claim page
+- Success/error feedback with clear messaging
+- Backend integration: **REAL** processClaim and verifyClaim Cloud Functions
+- Digital ticket display and download via **REAL** downloadAsset Cloud Function
+
+// Onboarding Demo Mode
+- Accessible from landing page without authentication
+- Interactive guided tour of creator and fan workflows
+- Simulated data to demonstrate value proposition
+- Designed for new users and hackathon judges
+
+// Monetization System (Stripe Integration Only)
+- Pricing page (/pricing) with Free, Basic, and Pro tiers
+- Stripe Checkout integration for subscription flows
+- Stripe Customer Portal for subscription management
+- Tier-based feature access based on Stripe subscription status
+- Feature gating for AI generations, Algorand logging, and advanced analytics
+- Settings page integration for plan upgrades via Stripe
+- Real-time subscription status updates from Firebase backend
+- Backend integration: handleStripeWebhook for Stripe event processing
+- Subscription status management with Zustand store for Stripe subscriptions
+
+// Legal & Informational Pages
+- **CRITICAL**: Dynamic content loading from **REAL** Firestore legalContent collection
+- Pages: Privacy Policy, Terms of Service, EULA, Disclaimers
+- **NO HARDCODED LEGAL CONTENT** - Must fetch from getLegalContent Cloud Function or direct Firestore queries
+- Settings page with links to all legal pages and keyboard shortcuts
+
+// Firebase Cloud Functions Integration - **REAL IMPLEMENTATIONS ONLY**
+- Base URL: https://us-central1-lazymint-hackathon.cloudfunctions.net/
+- **MANDATORY**: Use actual Firebase Functions SDK with httpsCallable
+- **MANDATORY**: Use actual Firestore SDK with getDocs, addDoc, updateDoc, deleteDoc
+- Required functions to integrate (NO MOCK IMPLEMENTATIONS):
+  * createCampaign, uploadAsset, processClaim, verifyClaim
+  * handleStripeWebhook (Stripe webhook processing), downloadAsset, getCampaignAnalytics
+  * generateCampaignContent, generateTicketBackground, generateArtisticQr
+  * logCampaignToAlgorand, getLegalContent, exportClaimEmailsCSV
+- Frontend should reflect subscription tiers and feature limits managed by Stripe
+- Display subscription status and entitlements from Stripe data
+- Import and properly configure:
+  * `import { getFunctions, httpsCallable } from 'firebase/functions'`
+  * `import { getFirestore, getDocs, addDoc, updateDoc, deleteDoc } from 'firebase/firestore'`
+
+// Hackathon Compliance Requirements
+- "Built on Bolt" Badge: Official badge prominently displayed
+- Make More Money Challenge: Stripe integration with subscription tier display and feature gating
+- Blockchain Challenge: Highlight Algorand lazy minting for campaign metadata
+- Deploy Challenge: Netlify-ready deployment configuration
+- One-Shot Competition: Complete solution in single prompt
+
+// Technical Implementation
+- **NEXT.JS 14 WITH APP ROUTER** (not React + Vite)
+- Stripe Web SDK integration for subscription management
+- PWA capabilities for mobile experience
+- Comprehensive error handling with user-friendly messages
+- Loading states for all asynchronous operations
+- Performance optimizations and monitoring
+- SEO configuration and meta tags
+- Type-safe API calls with proper TypeScript interfaces
+- **REAL Firebase integration throughout** - no setTimeout or mock responses
+- Subscription state management with Zustand store for Stripe entitlements
+
+// Testing and Quality Assurance
+- Unit and integration tests for critical flows
+- End-to-end testing for user journeys including subscription flows
+- Error boundary implementation
+- Performance monitoring setup
+- Stripe subscription testing scenarios
+
+// Deployment Configuration
+- Netlify deployment with environment variables
+- Stripe API keys and configuration
+- Production security measures
+- CI/CD pipeline configuration
+- Custom domain setup preparation
+- Analytics integration ready
+
+// **CRITICAL INTEGRATION REQUIREMENTS**
+1. **campaignStore.ts MUST use real Firebase calls**:
+   - Replace ALL mockApi functions with actual httpsCallable() calls
+   - Use real Firestore queries for campaign data
+   - No setTimeout or simulated responses
+
+2. **LegalPage.tsx MUST fetch from Firestore**:
+   - Dynamic loading from legalContent collection
+   - Call getLegalContent Cloud Function or direct Firestore queries
+   - No hardcoded legalContentMap
+
+3. **Firebase Configuration**:
+   - Properly initialize Firebase app
+   - Configure Firebase Auth, Firestore, and Functions
+   - Include all necessary Firebase imports
+
+4. **Stripe Integration**:
+   - Configure Stripe publishable key
+   - Implement Stripe Checkout for subscriptions
+   - Handle subscription status from Stripe webhooks
+   - Feature gating based on active Stripe subscriptions
+
+// Output Requirements
+Provide the complete, production-ready **Next.js 14** application with:
+- All configuration files (next.config.js, tailwind.config.js, etc.)
+- Complete component library with TypeScript interfaces
+- State management setup with Zustand stores including Stripe subscription management
+- **REAL Firebase integration and Cloud Functions calling logic**
+- Stripe subscription integration and entitlement management
+- Responsive UI with minty-green theme
+- Clear documentation for local development and Netlify deployment
+- Environment variable configuration guide including Stripe setup
+
+**CRITICAL SUCCESS CRITERIA**:
+- Must be Next.js 14 with App Router (NOT React + Vite)
+- All API calls must be real Firebase integrations (NO mock implementations)
+- Legal content must be dynamically loaded from Firestore
+- All campaign operations must use actual Firebase Cloud Functions
+- Stripe subscriptions must be fully integrated (NO RevenueCat or other providers)
+- No setTimeout, mockApi, or hardcoded responses allowed
+
+IMPORTANT DEPENDENCY TROUBLESHOOTING RULES:
+
+Before modifying any package dependencies:
+
+1. **VERIFY PACKAGE NAMES**: Always check the official npm registry (npmjs.com) or the project's official documentation to confirm the exact correct package name. Do not guess or assume package naming conventions.
+
+2. **CHECK MULTIPLE SOURCES**: Cross-reference at least 2-3 sources (official docs, npm registry, GitHub repo) before suggesting a package name change.
+
+3. **AVOID ASSUMPTIONS**: Do not assume how a package "should" be loaded (npm vs script tag vs CDN) without checking the official installation instructions first.
+
+**STRIPE-SPECIFIC RULES:**
+- Use `@stripe/stripe-js` for client-side Stripe integration
+- Stripe requires publishable key for frontend, secret key for backend
+- Always verify current package name at stripe.com/docs before suggesting changes
+- Use official Stripe Checkout for subscription flows
+- Handle webhooks securely with proper signature verification
+
+4. **DOCUMENT YOUR VERIFICATION**: When suggesting a package fix, explicitly state: "I verified this package name exists at [source]" or "According to the official docs at [URL]..."
+
+5. **IF UNCERTAIN**: If you cannot verify the correct package name from reliable sources, state "I need to research the correct package name" rather than providing potentially incorrect suggestions.
+
+
+---
+
+// Simplified Modular Structure for LazyMint
+src/
+  features/
+    monetization/        // Self-contained folder
+      PricingPage.tsx
+      SubscriptionStatus.tsx
+      stripeConfig.ts
+    ai-features/         // Self-contained folder  
+      ContentGenerator.tsx
+      QRGenerator.tsx
+      aiConfig.ts
+    core/               // Essential features
+      Dashboard.tsx
+      Auth.tsx
